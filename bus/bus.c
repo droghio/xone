@@ -51,7 +51,8 @@ static void gip_client_release(struct device *dev)
 }
 
 static struct device_type gip_client_type = {
-	.uevent = gip_client_uevent,
+	.uevent = (int (*)(const struct device *,
+                       struct kobj_uevent_env *)) gip_client_uevent,
 	.release = gip_client_release,
 };
 
