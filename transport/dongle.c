@@ -1029,7 +1029,8 @@ static struct usb_driver xone_dongle_driver = {
 	.suspend = xone_dongle_suspend,
 	.resume = xone_dongle_resume,
 	.id_table = xone_dongle_id_table,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 8, 0)
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 8, 0) && !RHEL_RELEASE_CODE) \
+	|| (RHEL_RELEASE_CODE && RHEL_RELEASE_CODE < RHEL_RELEASE_VERSION(9, 6))
 	.drvwrap.driver.shutdown = xone_dongle_shutdown,
 #else
 	.driver.shutdown = xone_dongle_shutdown,

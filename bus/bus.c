@@ -128,7 +128,7 @@ static void gip_bus_remove_compat(struct device *dev)
 
 static struct bus_type gip_bus_type = {
 	.name = "xone-gip",
-	.match = gip_bus_match,
+	.match = (int (*)(struct device *, const struct device_driver *)) gip_bus_match,
 	.probe = gip_bus_probe,
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
 	.remove = gip_bus_remove_compat,

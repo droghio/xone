@@ -99,7 +99,8 @@ struct gip_gamepad {
 
 static void gip_gamepad_send_rumble(struct timer_list *timer)
 {
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0)
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(6, 16, 0) && !RHEL_RELEASE_CODE) \
+	|| (RHEL_RELEASE_CODE && RHEL_RELEASE_CODE < RHEL_RELEASE_VERSION(9, 8))
 	struct gip_gamepad_rumble *rumble = from_timer(rumble, timer, timer);
 #else
 	struct gip_gamepad_rumble *rumble = timer_container_of(rumble, timer,
