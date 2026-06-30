@@ -18,12 +18,8 @@
 
 Installing `xone` will disable the `xpad` kernel driver. If you are still using Xbox or Xbox 360 peripherals, you will have to install [`xpad-noone`](https://github.com/medusalix/xpad-noone) as a replacement for `xpad`.
 
-## Important notes
-
-This driver is still in active development. Use at your own risk!
-If you are running `xow` upgrading to `xone` is *highly recommended*!
-Always update your Xbox devices to the latest firmware version!
-**Any feedback including bug reports, suggestions or ideas is [*greatly appreciated*](https://discord.gg/FDQxwWk).**
+> [!IMPORTANT]
+> This project is in maintenance mode and will receive only occasional minor fixes. An actively developed fork is available [here](https://github.com/dlundqvist/xone).
 
 ## Features
 
@@ -63,7 +59,7 @@ Any issues regarding the packaging should be reported to the respective maintain
 
 ### Prerequisites
 
-- Linux (kernel 5.11+ and headers)
+- Linux (kernel 5.13+ and headers)
 - DKMS
 - curl (for firmware download)
 - cabextract (for firmware extraction)
@@ -82,10 +78,10 @@ git clone https://github.com/medusalix/xone
 
 ```
 cd xone
-sudo ./install.sh --release
+sudo ./install.sh
 ```
 
-**NOTE:** Please omit the `--release` flag when asked for your debug logs.
+**NOTE:** You can use the `--release` flag to disable debug logging.
 
 4. Download the firmware for the wireless dongle:
 

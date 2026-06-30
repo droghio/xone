@@ -46,7 +46,8 @@ static void gip_client_release(struct device *dev)
 	struct gip_client *client = to_gip_client(dev);
 
 	gip_free_client_info(client);
-	kfree(client->chunk_buf);
+	kfree(client->chunk_buf_out);
+	kfree(client->chunk_buf_in);
 	kfree(client);
 }
 
@@ -56,7 +57,11 @@ static struct device_type gip_client_type = {
 	.release = gip_client_release,
 };
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
 static int gip_bus_match(struct device *dev, struct device_driver *driver)
+#else
+static int gip_bus_match(struct device *dev, const struct device_driver *driver)
+#endif
 {
 	struct gip_client *client;
 	struct gip_driver *drv;
@@ -143,7 +148,7 @@ struct gip_adapter *gip_create_adapter(struct device *parent,
 	if (!adap)
 		return ERR_PTR(-ENOMEM);
 
-	adap->id = ida_simple_get(&gip_adapter_ida, 0, 0, GFP_KERNEL);
+	adap->id = ida_alloc(&gip_adapter_ida, GFP_KERNEL);
 	if (adap->id < 0) {
 		err = adap->id;
 		goto err_put_device;
@@ -174,7 +179,7 @@ struct gip_adapter *gip_create_adapter(struct device *parent,
 err_destroy_queue:
 	destroy_workqueue(adap->clients_wq);
 err_remove_ida:
-	ida_simple_remove(&gip_adapter_ida, adap->id);
+	ida_free(&gip_adapter_ida, adap->id);
 err_put_device:
 	put_device(&adap->dev);
 
@@ -210,7 +215,7 @@ void gip_destroy_adapter(struct gip_adapter *adap)
 		device_unregister(&client->dev);
 	}
 
-	ida_simple_remove(&gip_adapter_ida, adap->id);
+	ida_free(&gip_adapter_ida, adap->id);
 	destroy_workqueue(adap->clients_wq);
 
 	dev_dbg(&adap->dev, "%s: unregistered\n", __func__);
@@ -291,7 +296,7 @@ void gip_free_client_info(struct gip_client *client)
 {
 	int i;
 
-	kfree(client->external_commands);
+	kfree(client->client_commands);
 	kfree(client->firmware_versions);
 	kfree(client->audio_formats);
 	kfree(client->capabilities_out);
@@ -305,7 +310,7 @@ void gip_free_client_info(struct gip_client *client)
 	kfree(client->interfaces);
 	kfree(client->hid_descriptor);
 
-	client->external_commands = NULL;
+	client->client_commands = NULL;
 	client->audio_formats = NULL;
 	client->capabilities_out = NULL;
 	client->capabilities_in = NULL;
